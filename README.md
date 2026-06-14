@@ -10,19 +10,31 @@ Proof of concept for integrating SQLcl MCP execution with Trivadis guideline che
 
 ## Repository Contents
 
-| Tree | Comments |
+```text
+.
+|-- README.md
+|-- LICENSE
+|-- trivadis_warning_status.md
+|-- docs
+|   |-- ai_guidance.md
+|   \-- manual_trivadis_checks.md
+|-- examples
+|   |-- select_from_dual_demo.sql
+|   \-- select_from_dual_warning_record.md
+\-- skills
+    \-- sqlcl_mcp_trivadis_agent_skill.md
+```
+
+| Path | Description |
 | --- | --- |
-| `.` | Repository root for the proof of concept. |
-| `|-- README.md` | Main overview, flow, prompts, and usage notes. |
-| `|-- trivadis_warning_status.md` | One-row-per-file-and-rule warning tracking table. |
-| `|-- docs/` | Human and agent workflow documentation. |
-| `|   |-- ai_guidance.md` | MCP workflow guidance for automatic or assisted warning handling. |
-| `|   \-- manual_trivadis_checks.md` | Standalone SQLcl steps for manual Trivadis checks. |
-| `|-- examples/` | Minimal reproducible SQL example and its warning record. |
-| `|   |-- select_from_dual_demo.sql` | Sample script with version comments and fixed warning. |
-| `|   \-- select_from_dual_warning_record.md` | Warning capture and post-fix verification notes. |
-| `\-- skills/` | Example skill definition for agent adoption. |
-| `    \-- sqlcl_mcp_trivadis_agent_skill.md` | Skill behavior for SQLcl MCP plus Trivadis iterations. |
+| `README.md` | Main overview, flow, prompts, and usage notes. |
+| `LICENSE` | MIT license for broad reuse with warranty disclaimer. |
+| `trivadis_warning_status.md` | One-row-per-file-and-rule warning tracking table. |
+| `docs/ai_guidance.md` | MCP workflow guidance for automatic or assisted warning handling. |
+| `docs/manual_trivadis_checks.md` | Standalone SQLcl steps for manual Trivadis checks. |
+| `examples/select_from_dual_demo.sql` | Sample script with version comments and fixed warning. |
+| `examples/select_from_dual_warning_record.md` | Warning capture and post-fix verification notes. |
+| `skills/sqlcl_mcp_trivadis_agent_skill.md` | Skill behavior for SQLcl MCP plus Trivadis iterations. |
 
 ## How It Works
 
@@ -36,32 +48,41 @@ Proof of concept for integrating SQLcl MCP execution with Trivadis guideline che
 
 ## Sequence Diagram
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor U as User
-    participant A as AI Agent
-    participant M as SQLcl MCP
-    participant S as SQLcl
-    participant T as Codescan
-    participant O as Oracle DB
-
-    U->>A: Ask for SQL change or review
-    A->>M: Connect and get schema context
-    M->>S: Open saved SQLcl connection
-    S->>O: Connect to target schema
-    A->>M: Enable codescan
-    M->>S: set codescan on
-    A->>M: Execute script file
-    M->>S: Run at-script command
-    S->>T: Evaluate best-practice rules
-    T-->>S: Return warning list
-    S->>O: Run SQL or PL/SQL
-    O-->>S: Return result
-    S-->>M: Return warnings and output
-    M-->>A: Return execution response
-    A->>A: Fix low-risk issues or ask user
-    A-->>U: Report result and next action
+```text
+User
+  |
+  | ask for SQL change or review
+  v
+AI Agent
+  |
+  | connect + get schema context
+  v
+SQLcl MCP
+  |
+  | open saved connection
+  v
+SQLcl Session --------------------> Oracle Database
+  |                                     |
+  | set codescan on                     | connect and execute SQL/PLSQL
+  | run @script.sql                     |
+  v                                     |
+Codescan <------------------------------+
+  |
+  | return Trivadis warnings
+  v
+SQLcl Session
+  |
+  | return warnings + query output
+  v
+SQLcl MCP
+  |
+  | return execution response
+  v
+AI Agent
+  |
+  | fix low-risk issues or ask user
+  v
+User
 ```
 
 ## Example Prompts
