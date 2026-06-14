@@ -83,4 +83,5 @@ Using the existing branch, fix only the selected Trivadis warnings in the reposi
 - Keep one status row per source file and Trivadis rule.
 - Use the same row across branch work, fixes, and merge.
 - Fill `Branch Name` when work starts on the branch.
+- Use `YYYYMMDDHH24MI` for `Fixed Stamp` and `Merged To Main Stamp`.
 - Fill `Merged To Main Stamp` when the branch is merged to `main`.

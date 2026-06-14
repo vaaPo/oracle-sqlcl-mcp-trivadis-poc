@@ -20,7 +20,7 @@ Use this skill when an agent is generating, reviewing, or refactoring Oracle SQL
 6. Apply low-risk fixes in repository source files only.
 7. Do not modify database objects directly as part of automatic warning handling.
 8. Ask the user before applying higher-risk or judgment-based fixes.
-9. Record warning lifecycle details in `trivadis_warning_status.md`.
+9. Record warning lifecycle details in `trivadis_warning_status.md` using `YYYYMMDDHH24MI` stamp format.
 
 ## Low-Risk Fix Examples
 

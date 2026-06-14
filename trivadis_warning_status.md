@@ -16,9 +16,11 @@ This table tracks one row per source file and Trivadis rule in this proof-of-con
 | `MM` | Merged to `main` stamp |
 | `FN` | Fix notes |
 
+Stamp format for `FS` and `MM`: `YYYYMMDDHH24MI`
+
 | SF | R | BR | FDV | LDV | FIV | FS | MM | FN |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `examples/select_from_dual_demo.sql` | `G-3145 Avoid using SELECT * directly from a table or view.` | `main` | `v1` | `v1` | `v2` | `2026-06-14T10:51:08+0300` | `2026-06-14T11:47:00+0300` | `Replaced select * from dual with select dummy from dual; verified clean through MCP with set codescan on.` |
+| `examples/select_from_dual_demo.sql` | `G-3145 Avoid using SELECT * directly from a table or view.` | `main` | `v1` | `v1` | `v2` | `202606141051` | `202606141147` | `Replaced select * from dual with select dummy from dual; verified clean through MCP with set codescan on.` |
 
 ## Usage Rule
 

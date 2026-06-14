@@ -57,9 +57,10 @@ The agent should ask before changing code when any of these are true:
 1. Log each warning in `trivadis_warning_status.md` using one row per source file and Trivadis rule.
 2. Update detection versions when the warning persists across iterations.
 3. Add the fix version and fix stamp after the warning is resolved.
-4. Record the working branch name for the warning lifecycle.
-5. Record the merge timestamp when the branch is merged to `main`.
-6. Keep source-file version comments aligned with the latest fix.
+4. Use `YYYYMMDDHH24MI` for recorded stamps.
+5. Record the working branch name for the warning lifecycle.
+6. Record the merge timestamp when the branch is merged to `main`.
+7. Keep source-file version comments aligned with the latest fix.
 
 ## Practical Rule
 

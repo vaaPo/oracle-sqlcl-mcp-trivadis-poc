@@ -24,7 +24,7 @@ SQL best practice warning (1,8): G-3145: Avoid using SELECT * directly from a ta
 
 - Fixed in source version `v2`
 - Fixed by: `OpenCode / gpt-5.4`
-- Fixed at: `2026-06-14T10:51:08+0300`
+- Fixed at: `202606141051`
 - Fix: Replaced `select * from dual;` with `select dummy from dual;`
 
 ## Verification After Fix
