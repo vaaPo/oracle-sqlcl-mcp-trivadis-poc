@@ -11,13 +11,7 @@ Make Trivadis guideline feedback part of each SQL and PL/SQL iteration done thro
 3. Run `set codescan on` in the SQLcl session.
 4. Execute SQL or PL/SQL scripts with `@file.sql` to surface inline warnings.
 
-## SQLcl MCP Script Execution Notes
-
-- Use `sqlcl_sqlcl_run` for SQLcl script commands such as `@file.sql` and `@@nested_file.sql`.
-- Do not expect plain SQL execution helpers to run `@` or `@@`; those are SQLcl commands rather than standalone SQL statements.
-- Use absolute paths such as `@/absolute/path/to/script.sql` when calling scripts through MCP.
-- Use `@@nested_file.sql` only when a nested script should resolve relative to the calling script.
-- Keep `set codescan on` in the same SQLcl session before running `@` or `@@` if you want inline Trivadis warnings.
+See `docs/sqlcl_mcp_file_execution.md` for SQLcl MCP file execution details, including `@`, `@@`, and MCP permission caveats.
 
 ## Minimal MCP Workflow
 

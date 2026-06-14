@@ -1,6 +1,11 @@
 # oracle-sqlcl-mcp-trivadis-poc
 
-Proof of concept for integrating SQLcl MCP execution with Trivadis guideline checks during AI-assisted SQL and PL/SQL iterations.
+Public proof of concept showing how Oracle SQLcl Codescan and SQLcl MCP can be used to validate repository SQL or PL/SQL source files against Trivadis-style rules.
+
+## Start Here
+
+- Oracle SQLcl `CODESCAN` docs: <https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/codescan.html>
+- Trivadis PL/SQL and SQL Coding Guidelines: <https://trivadis.github.io/plsql-and-sql-coding-guidelines/>
 
 ## POC Scope
 
@@ -18,6 +23,7 @@ Proof of concept for integrating SQLcl MCP execution with Trivadis guideline che
 |-- docs
 |   |-- ai_guidance.md
 |   |-- git_trivadis_workflow.md
+|   |-- sqlcl_mcp_file_execution.md
 |   \-- manual_trivadis_checks.md
 |-- examples
 |   |-- select_from_dual_demo.sql
@@ -33,6 +39,7 @@ Proof of concept for integrating SQLcl MCP execution with Trivadis guideline che
 | `trivadis_warning_status.md` | One-row-per-file-and-rule warning tracking table with branch and main-merge tracking. |
 | `docs/ai_guidance.md` | MCP workflow guidance for source-file warning handling. |
 | `docs/git_trivadis_workflow.md` | Branch, commit, PR, review, and merge workflow for Trivadis iterations. |
+| `docs/sqlcl_mcp_file_execution.md` | SQLcl MCP `@` and `@@` execution notes, including permission caveats. |
 | `docs/manual_trivadis_checks.md` | Standalone SQLcl steps for manual Trivadis checks. |
 | `examples/select_from_dual_demo.sql` | Sample script with version comments and fixed warning. |
 | `examples/select_from_dual_warning_record.md` | Warning capture and post-fix verification notes. |
@@ -116,32 +123,6 @@ codescan -path /absolute/path/to/sql/files
 
 More detail is in `docs/manual_trivadis_checks.md`.
 
-## SQLcl MCP Script Execution
-
-If you want to execute repository SQL files through SQLcl MCP, use SQLcl command execution rather than plain SQL execution.
-
-Recommended pattern:
-
-```text
-sqlcl_connect
-sqlcl_schema_information
-sqlcl_sqlcl_run: set codescan on
-sqlcl_sqlcl_run: @/absolute/path/to/your_script.sql
-```
-
-Nested scripts:
-
-```text
-sqlcl_sqlcl_run: @@nested_script.sql
-```
-
-Notes:
-
-- `@` and `@@` are SQLcl script commands.
-- Use `sqlcl_sqlcl_run` for them.
-- Use `@@` only when relative resolution from the calling script is intended.
-- Keep `set codescan on` in the same session before running the script.
-
 ## Key Rule
 
 Inline Trivadis warnings are not emitted automatically just because a script is executed with `@file.sql`. The SQLcl session must enable `set codescan on`, or the operator must run an explicit `codescan -path ...` command.
@@ -150,4 +131,5 @@ Inline Trivadis warnings are not emitted automatically just because a script is 
 
 - Start with `docs/manual_trivadis_checks.md` for human execution.
 - Start with `docs/ai_guidance.md` and `skills/sqlcl_mcp_trivadis_agent_skill.md` for agent-driven workflows.
+- Start with `docs/sqlcl_mcp_file_execution.md` for SQLcl MCP file execution details.
 - Start with `docs/git_trivadis_workflow.md` for branch, PR, review, and merge workflow.
