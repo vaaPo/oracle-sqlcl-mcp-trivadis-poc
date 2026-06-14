@@ -5,7 +5,7 @@ Proof of concept for integrating SQLcl MCP execution with Trivadis guideline che
 ## POC Scope
 
 - Show that SQLcl can surface Trivadis warnings inline during script execution when `set codescan on` is enabled.
-- Show how an MCP-based agent can detect, interpret, and fix warnings in iterative workflows.
+- Show how an MCP-based agent can detect, interpret, and fix source-file warnings in iterative workflows.
 - Provide a small reusable documentation set for both humans and agents.
 
 ## Repository Contents
@@ -17,6 +17,7 @@ Proof of concept for integrating SQLcl MCP execution with Trivadis guideline che
 |-- trivadis_warning_status.md
 |-- docs
 |   |-- ai_guidance.md
+|   |-- git_trivadis_workflow.md
 |   \-- manual_trivadis_checks.md
 |-- examples
 |   |-- select_from_dual_demo.sql
@@ -29,8 +30,9 @@ Proof of concept for integrating SQLcl MCP execution with Trivadis guideline che
 | --- | --- |
 | `README.md` | Main overview, flow, prompts, and usage notes. |
 | `LICENSE` | MIT license for broad reuse with warranty disclaimer. |
-| `trivadis_warning_status.md` | One-row-per-file-and-rule warning tracking table. |
-| `docs/ai_guidance.md` | MCP workflow guidance for automatic or assisted warning handling. |
+| `trivadis_warning_status.md` | One-row-per-file-and-rule warning tracking table with branch and main-merge tracking. |
+| `docs/ai_guidance.md` | MCP workflow guidance for source-file warning handling. |
+| `docs/git_trivadis_workflow.md` | Branch, commit, PR, review, and merge workflow for Trivadis iterations. |
 | `docs/manual_trivadis_checks.md` | Standalone SQLcl steps for manual Trivadis checks. |
 | `examples/select_from_dual_demo.sql` | Sample script with version comments and fixed warning. |
 | `examples/select_from_dual_warning_record.md` | Warning capture and post-fix verification notes. |
@@ -43,8 +45,8 @@ Proof of concept for integrating SQLcl MCP execution with Trivadis guideline che
 3. SQLcl session enables `set codescan on`.
 4. The script runs with `@file.sql`.
 5. SQLcl emits Trivadis warnings inline, if any exist.
-6. The agent either fixes low-risk warnings automatically or asks the user to decide.
-7. The script is re-run until warnings are fixed, accepted, or recorded.
+6. The agent updates repository source files for low-risk fixes or asks the user to decide.
+7. The script is re-run until warnings are fixed in source, accepted, or recorded.
 
 ## Sequence Diagram
 
@@ -80,34 +82,18 @@ SQLcl MCP
   v
 AI Agent
   |
-  | fix low-risk issues or ask user
+  | update source files or ask user
   v
 User
 ```
 
 ## Example Prompts
 
-Short prompt for a direct agent task:
-
-```text
-Use SQLcl MCP with Trivadis checks for this SQL change.
-Connect with the saved SQLcl connection, fetch schema info, enable `set codescan on`, run the script with `@file.sql`, and treat Trivadis warnings as part of the iteration.
-Fix low-risk warnings automatically, record the warning and fix in `trivadis_warning_status.md`, and ask me before making any change that could alter behavior or conventions.
-```
-
-Prompt for reviewing an existing SQL file:
-
-```text
-Review this SQL file with SQLcl MCP and Trivadis checks.
-Connect with the saved SQLcl connection, enable `set codescan on`, execute the file with `@file.sql`, list any Trivadis warnings with rule numbers, fix safe issues automatically, and explain any warnings that still need user approval.
-```
-
-Prompt for a human who wants to guide the agent step by step:
-
-```text
-Use the SQLcl MCP Trivadis proof-of-concept workflow from this repository.
-Show me each warning found for the script, propose the smallest correct fix, apply it only when low risk, and keep `trivadis_warning_status.md` updated.
-```
+| Use Case | Prompt |
+| --- | --- |
+| Direct agent task | Use SQLcl MCP with Trivadis checks for this SQL change. Enable `set codescan on`, run `@file.sql`, update only repository source files for safe fixes, record the warning lifecycle in `trivadis_warning_status.md`, and ask before higher-risk changes. |
+| Review existing SQL file | Review this SQL file with SQLcl MCP and Trivadis checks. Run the file, list warning rule numbers, propose the smallest source-file fix for each warning, and apply only safe repository-file edits. |
+| Guided step-by-step run | Use the proof-of-concept workflow from this repository. Show each warning, propose the smallest source-file fix, do not modify database objects directly, and keep `trivadis_warning_status.md` updated. |
 
 ## Standalone SQLcl Setup
 
@@ -130,6 +116,32 @@ codescan -path /absolute/path/to/sql/files
 
 More detail is in `docs/manual_trivadis_checks.md`.
 
+## SQLcl MCP Script Execution
+
+If you want to execute repository SQL files through SQLcl MCP, use SQLcl command execution rather than plain SQL execution.
+
+Recommended pattern:
+
+```text
+sqlcl_connect
+sqlcl_schema_information
+sqlcl_sqlcl_run: set codescan on
+sqlcl_sqlcl_run: @/absolute/path/to/your_script.sql
+```
+
+Nested scripts:
+
+```text
+sqlcl_sqlcl_run: @@nested_script.sql
+```
+
+Notes:
+
+- `@` and `@@` are SQLcl script commands.
+- Use `sqlcl_sqlcl_run` for them.
+- Use `@@` only when relative resolution from the calling script is intended.
+- Keep `set codescan on` in the same session before running the script.
+
 ## Key Rule
 
 Inline Trivadis warnings are not emitted automatically just because a script is executed with `@file.sql`. The SQLcl session must enable `set codescan on`, or the operator must run an explicit `codescan -path ...` command.
@@ -138,3 +150,4 @@ Inline Trivadis warnings are not emitted automatically just because a script is 
 
 - Start with `docs/manual_trivadis_checks.md` for human execution.
 - Start with `docs/ai_guidance.md` and `skills/sqlcl_mcp_trivadis_agent_skill.md` for agent-driven workflows.
+- Start with `docs/git_trivadis_workflow.md` for branch, PR, review, and merge workflow.

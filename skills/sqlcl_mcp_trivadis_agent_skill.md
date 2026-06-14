@@ -17,9 +17,10 @@ Use this skill when an agent is generating, reviewing, or refactoring Oracle SQL
 3. Enable `set codescan on` before running any validation script.
 4. Execute changed SQL using `@file.sql`.
 5. Read inline Trivadis warnings from the execution output.
-6. Fix low-risk warnings automatically.
-7. Ask the user before applying higher-risk or judgment-based fixes.
-8. Record warning lifecycle details in `trivadis_warning_status.md`.
+6. Apply low-risk fixes in repository source files only.
+7. Do not modify database objects directly as part of automatic warning handling.
+8. Ask the user before applying higher-risk or judgment-based fixes.
+9. Record warning lifecycle details in `trivadis_warning_status.md`.
 
 ## Low-Risk Fix Examples
 
@@ -36,5 +37,5 @@ Use this skill when an agent is generating, reviewing, or refactoring Oracle SQL
 ## Prompt Snippet
 
 ```text
-Apply the SQLcl MCP Trivadis skill for this task. Connect with the saved SQLcl connection, fetch schema context, enable `set codescan on`, run the script with `@file.sql`, surface any Trivadis warnings, fix low-risk warnings automatically, and ask before making higher-risk changes.
+Apply the SQLcl MCP Trivadis skill for this task. Connect with the saved SQLcl connection, fetch schema context, enable `set codescan on`, run the script with `@file.sql`, surface any Trivadis warnings, apply low-risk fixes only in repository source files, do not modify database objects directly, and ask before making higher-risk changes.
 ```
