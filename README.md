@@ -4,7 +4,7 @@ Public proof of concept showing how Oracle SQLcl Codescan and SQLcl MCP can be u
 
 ## Start Here
 
-- Oracle SQLcl `CODESCAN` docs: <https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/codescan.html>
+- Oracle SQLcl `CODESCAN` docs: <https://docs.oracle.com/en/database/oracle/sql-developer-command-line/26.1/sqcug/codescan.html>
 - Trivadis PL/SQL and SQL Coding Guidelines: <https://trivadis.github.io/plsql-and-sql-coding-guidelines/>
 
 ## POC Scope
