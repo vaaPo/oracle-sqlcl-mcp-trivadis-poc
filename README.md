@@ -10,18 +10,19 @@ Proof of concept for integrating SQLcl MCP execution with Trivadis guideline che
 
 ## Repository Contents
 
-- `examples/select_from_dual_demo.sql`
-  Minimal sample script with source-level version comments and a fixed Trivadis warning.
-- `examples/select_from_dual_warning_record.md`
-  Warning capture and fix verification for the sample script.
-- `trivadis_warning_status.md`
-  One-row-per-file-and-rule tracking table for detected and fixed warnings.
-- `docs/ai_guidance.md`
-  MCP workflow guidance for automatic or assisted warning handling.
-- `docs/manual_trivadis_checks.md`
-  Human-oriented SQLcl steps for checking a SQL file manually.
-- `skills/sqlcl_mcp_trivadis_agent_skill.md`
-  Example skill definition for an agent that should include this behavior.
+| Tree | Comments |
+| --- | --- |
+| `.` | Repository root for the proof of concept. |
+| `|-- README.md` | Main overview, flow, prompts, and usage notes. |
+| `|-- trivadis_warning_status.md` | One-row-per-file-and-rule warning tracking table. |
+| `|-- docs/` | Human and agent workflow documentation. |
+| `|   |-- ai_guidance.md` | MCP workflow guidance for automatic or assisted warning handling. |
+| `|   \-- manual_trivadis_checks.md` | Standalone SQLcl steps for manual Trivadis checks. |
+| `|-- examples/` | Minimal reproducible SQL example and its warning record. |
+| `|   |-- select_from_dual_demo.sql` | Sample script with version comments and fixed warning. |
+| `|   \-- select_from_dual_warning_record.md` | Warning capture and post-fix verification notes. |
+| `\-- skills/` | Example skill definition for agent adoption. |
+| `    \-- sqlcl_mcp_trivadis_agent_skill.md` | Skill behavior for SQLcl MCP plus Trivadis iterations. |
 
 ## How It Works
 
@@ -38,38 +39,75 @@ Proof of concept for integrating SQLcl MCP execution with Trivadis guideline che
 ```mermaid
 sequenceDiagram
     autonumber
-    participant U as User
+    actor U as User
     participant A as AI Agent
     participant M as SQLcl MCP
-    participant S as SQLcl Session
-    participant O as Oracle Database
-    participant T as Trivadis Codescan
+    participant S as SQLcl
+    participant T as Codescan
+    participant O as Oracle DB
 
-    U->>A: Request SQL change or review
-    A->>M: Connect and fetch schema context
+    U->>A: Ask for SQL change or review
+    A->>M: Connect and get schema context
     M->>S: Open saved SQLcl connection
     S->>O: Connect to target schema
-    A->>M: Run `set codescan on`
-    M->>S: Enable codescan in session
-    A->>M: Run `@script.sql`
-    M->>S: Execute script
-    S->>T: Evaluate SQL/PLSQL best practices
+    A->>M: Enable codescan
+    M->>S: set codescan on
+    A->>M: Execute script file
+    M->>S: Run at-script command
+    S->>T: Evaluate best-practice rules
     T-->>S: Return warning list
-    S->>O: Execute SQL statement
+    S->>O: Run SQL or PL/SQL
     O-->>S: Return result
-    S-->>M: Return warnings and query output
-    M-->>A: Structured or inline execution output
-    A->>A: Decide fix automatically or ask user
-    A-->>U: Report warning, fix, or follow-up question
+    S-->>M: Return warnings and output
+    M-->>A: Return execution response
+    A->>A: Fix low-risk issues or ask user
+    A-->>U: Report result and next action
 ```
 
-## Example Agent Prompt
+## Example Prompts
+
+Short prompt for a direct agent task:
 
 ```text
 Use SQLcl MCP with Trivadis checks for this SQL change.
 Connect with the saved SQLcl connection, fetch schema info, enable `set codescan on`, run the script with `@file.sql`, and treat Trivadis warnings as part of the iteration.
 Fix low-risk warnings automatically, record the warning and fix in `trivadis_warning_status.md`, and ask me before making any change that could alter behavior or conventions.
 ```
+
+Prompt for reviewing an existing SQL file:
+
+```text
+Review this SQL file with SQLcl MCP and Trivadis checks.
+Connect with the saved SQLcl connection, enable `set codescan on`, execute the file with `@file.sql`, list any Trivadis warnings with rule numbers, fix safe issues automatically, and explain any warnings that still need user approval.
+```
+
+Prompt for a human who wants to guide the agent step by step:
+
+```text
+Use the SQLcl MCP Trivadis proof-of-concept workflow from this repository.
+Show me each warning found for the script, propose the smallest correct fix, apply it only when low risk, and keep `trivadis_warning_status.md` updated.
+```
+
+## Standalone SQLcl Setup
+
+If you want the manual flow to work outside MCP, make sure your local SQLcl supports codescan and enable it in the session before executing scripts.
+
+Basic standalone flow:
+
+```text
+sql /nolog
+connect my_saved_connection
+set codescan on
+@/absolute/path/to/your_script.sql
+```
+
+Optional folder-level scan:
+
+```text
+codescan -path /absolute/path/to/sql/files
+```
+
+More detail is in `docs/manual_trivadis_checks.md`.
 
 ## Key Rule
 

@@ -10,6 +10,26 @@ This guide shows how a human operator can check a SQL file with SQLcl and see Tr
 - A saved SQLcl connection already exists.
 - The target SQL file is available on the local filesystem.
 
+## Standalone SQLcl Setup Notes
+
+Before testing a file manually, confirm that your SQLcl build supports codescan:
+
+```text
+help codescan
+```
+
+If the command is available, enable it in the active session before running the file:
+
+```text
+set codescan on
+```
+
+Important behavior:
+
+- `@file.sql` alone does not guarantee that Trivadis warnings will be shown.
+- Inline warnings appear only when codescan is enabled for the current session.
+- For scanning a whole directory, use `codescan -path ...`.
+
 ## Inline Check Flow
 
 1. Start SQLcl.
